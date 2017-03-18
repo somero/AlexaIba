@@ -24,7 +24,8 @@ get '/last_news' do
   rescue => e
     content_type :json
     {
-      error: e.message
+      error: e.message,
+      which: `which ffmpeg`
     }.to_json
   end
 end
