@@ -2,7 +2,7 @@ require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
 
-task :update_feed => :environment do
+task :update_feed do
   puts "Updating feed..."
   get_news
   puts "done."
