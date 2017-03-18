@@ -20,7 +20,7 @@ end
 get '/last_news' do
   begin
     content_type 'audio/mpeg'
-    s3 = AWS::S3.new
+    s3 = Aws::S3.new
     s3.buckets[ENV['BUCKET']].objects['last_news'].read
   rescue => e
     content_type :json
