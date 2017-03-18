@@ -62,7 +62,7 @@ def get_news
   end
 
   # Join files
-  `ffmpeg -f concat -safe 0 -i /tmp/join.txt -c copy /tmp/news.ts`
+  `/app/vendor/ffmpeg/bin/ffmpeg -f concat -safe 0 -i /tmp/join.txt -c copy /tmp/news.ts`
   `rm /tmp/join.txt /tmp/audio*.ts`
 end
 
