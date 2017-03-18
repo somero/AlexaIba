@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
+require 'aws-sdk'
 
 task :update_feed do
   puts "Updating feed..."
@@ -42,6 +43,10 @@ def get_news
     `rm /tmp/news.ts`
     `ffmpeg -f concat -safe 0 -i /tmp/join.txt -c copy /tmp/news.ts`
     `rm /tmp/join.txt /tmp/audio*.ts`
+
+    s3 = Aws::S3::Resource.new
+    obj = s3.bucket(ENV['BUCKET']).object('key')
+    obj.upload_file('/tmp/news.ts')
 end
 
 

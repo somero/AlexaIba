@@ -3,6 +3,7 @@ require 'json'
 require 'securerandom'
 require 'open-uri'
 require 'nokogiri'
+require 'aws-sdk'
 
 set :protection, except: [:json_csrf]
 get '/' do
