@@ -15,5 +15,6 @@ get '/' do
 end
 
 get '/last_news' do
-  'bla'
+  `echo hi >> /tmp/file.txt`
+  File.read('/tmp/file.txt')
 end
