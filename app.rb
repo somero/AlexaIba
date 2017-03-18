@@ -21,7 +21,7 @@ get '/last_news' do
   begin
     content_type 'audio/mpeg'
     s3 = Aws::S3::Resource.new
-    s3.bucket[ENV['BUCKET']].objects['last_news'].read
+    s3.bucket(ENV['BUCKET']).objects['last_news'].read
   rescue => e
     content_type :json
     {
