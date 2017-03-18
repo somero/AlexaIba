@@ -44,8 +44,8 @@ def get_news
     `ffmpeg -f concat -safe 0 -i /tmp/join.txt -c copy /tmp/news.ts`
     `rm /tmp/join.txt /tmp/audio*.ts`
 
-    s3 = Aws::S3::Resource.new(region: 'us-east-1')
-    obj = s3.bucket(ENV['BUCKET']).object('key')
+    s3 = Aws::S3::Resource.new
+    obj = s3.bucket(ENV['BUCKET']).object('last_news')
     obj.upload_file('/tmp/news.ts')
 end
 
