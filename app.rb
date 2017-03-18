@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'json'
 require 'securerandom'
+require 'open-uri'
 
 set :protection, except: [:json_csrf]
 get '/' do
@@ -15,6 +16,6 @@ get '/' do
 end
 
 get '/last_news' do
-  `echo hi >> /tmp/file.txt`
-  File.read('/tmp/file.txt')
+  content_type 'audio/mpeg'
+  open('http://www.orangefreesounds.com/wp-content/uploads/2017/01/Angry-dog-growling.mp3').read
 end
