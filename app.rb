@@ -5,6 +5,10 @@ set :protection, except: [:json_csrf]
 get '/' do
   content_type :json
   {
-    hi: 'there'
+    uid: Time.now,
+    updateDate: Time.now,
+    titleText: 'Iba News',
+    mainText: 'Maintextwat',
+    streamUrl: 'https://iba-news.herokuapp.com/last_news'
   }.to_json
 end
