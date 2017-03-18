@@ -50,7 +50,7 @@ def get_news
   medias_file = open(chunks_url) { |io| data = io.read }
   medias = medias_file.split("\n").select {|x| x.include? ('media')}
   open("/tmp/join.txt", 'w') do |join|
-    medias.each_with_index { |m, i|
+    medias.first(3).each_with_index { |m, i|
       media_url = "#{playlist_url.gsub(/\/playlist.*/,'')}/#{m}"
       open("/tmp/audio_part#{i}.ts", 'wb') do |file|
         file << open(media_url).read
