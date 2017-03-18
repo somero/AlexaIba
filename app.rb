@@ -17,8 +17,16 @@ get '/' do
 end
 
 get '/last_news' do
-  content_type 'audio/mpeg'
-  open('/tmp/news.ts').read
+  begin
+    content_type 'audio/mpeg'
+    get_news
+    open('/tmp/news.ts').read
+  rescue => e
+    content_type :json
+    {
+      error: e.message
+    }.to_json
+  end
 end
 
 def get_news
