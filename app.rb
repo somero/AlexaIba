@@ -25,6 +25,7 @@ get '/last_news' do
     content_type :json
     {
       error: e.message,
+      what: `echo hi`,
       which: `which ffmpeg`
     }.to_json
   end
