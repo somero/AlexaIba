@@ -2,6 +2,7 @@ require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
 require 'aws-sdk'
+require 'streamio-ffmpeg'
 
 task :update_feed do
   puts "Updating feed..."
@@ -10,54 +11,27 @@ task :update_feed do
 end
 
 def get_news
-    base = "www.iba.org.il"
-    url = URI.parse("http://#{base}/index.aspx?cat=1")
+    base = "http://reshet.tv/news/channel2-news/daily-edition"
+    url = base
     page = Nokogiri::HTML(open(url))
-    lastnews = page.css('.mahadorut li:first-child a').attribute('href').value
+    lastnews = page.to_s.scan(/http[^\"]*newsitem-[0-9]*/).uniq.sort.last
 
-    url = URI.parse("http://#{base}/#{lastnews}")
+    url = URI.parse(lastnews.gsub('\\', ''))
     page = Nokogiri::HTML(open(url))
-    vimmid = page.css('#playerUrl').text
-    meta = metadata_url(vimmid)
+    lastvid = page.to_s.scan(/http[^\"]*mahadura[^\"]*mp4/).uniq.first.gsub('\\', '')
 
-    metadata = Nokogiri::XML(open(meta))
-    playlist_url = metadata.at_css('SmilURL').text
-
-    pl =open(playlist_url) { |io| data = io.read }
-    chunk_list = pl.split("\n").select {|x| x.include? ('chunklist')}.first
-    chunks_url = "#{playlist_url.gsub(/\/playlist.*/,'')}/#{chunk_list}"
-
-    medias_file = open(chunks_url) { |io| data = io.read }
-    medias = medias_file.split("\n").select {|x| x.include? ('media')}
-    open("/tmp/join.txt", 'w') do |join|
-        medias.each_with_index { |m, i| 
-            media_url = "#{playlist_url.gsub(/\/playlist.*/,'')}/#{m}"    
-            open("/tmp/audio_part#{i}.ts", 'wb') do |file|
-                  file << open(media_url).read
-            end
-            join.puts "file '/tmp/audio_part#{i}.ts'"
-        }
+    open("/tmp/last_news.mp4", 'wb') do |file|
+        file << open(lastvid).read
     end
 
-    # Join files
-    `rm /tmp/news.ts`
-    `ffmpeg -f concat -safe 0 -i /tmp/join.txt -c copy /tmp/news.ts`
-    `rm /tmp/join.txt /tmp/audio*.ts`
+    moview = FFMPEG::Movie.new("/tmp/last_news.mp4")
+    movie.transcode('/tmp/news_audio.aac', %w(-vn -acodec copy /tmp/news_audio.aac))
 
     s3 = Aws::S3::Resource.new
     obj = s3.bucket(ENV['BUCKET']).object('last_news')
-    obj.upload_file('/tmp/news.ts')
-end
+    obj.upload_file('/tmp/news_audio.aac')
 
-
-def metadata_url(vimmiID)
-    deliveryType = 'hls'
-    siteName = 'iba'
-    accountName = 'iba'
-    searchString = '?smil_profile=default'
-    metaUrl = "http://" + accountName + "-metadata-rr-d.vidnt.com/"
-    metaUrl += "vod/vod/"
-    metaUrl += (vimmiID + "/" + deliveryType + "/metadata.xml")
-    metaUrl + searchString
+    File.delete('/tmp/last_news.mp4')
+    File.delete('/tmp/news_audio.aac')
 end
 
