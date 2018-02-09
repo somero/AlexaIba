@@ -24,7 +24,7 @@ def get_news
         file << open(lastvid).read
     end
 
-    moview = FFMPEG::Movie.new("/tmp/last_news.mp4")
+    movie = FFMPEG::Movie.new("/tmp/last_news.mp4")
     movie.transcode('/tmp/news_audio.aac', %w(-vn -acodec copy /tmp/news_audio.aac))
 
     s3 = Aws::S3::Resource.new
