@@ -28,7 +28,7 @@ def get_news
 
     unless File.exist?('/tmp/news_audio.aac')
         movie = FFMPEG::Movie.new("/tmp/last_news.mp4")
-        movie.transcode('/tmp/news_audio.aac', %w(-vn -acodec -strict -2 copy))
+        movie.transcode('/tmp/news_audio.aac', %w(-vn -acodec copy))
     end
 
     s3 = Aws::S3::Resource.new
